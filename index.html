@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus & Calm Anchor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F7F5; /* Notion Default Background */
+            color: #37352F; /* Notion Default Text */
+        }
+
+        /* Hide scrollbar for cleaner embed */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .btn-notion {
+            transition: background-color 0.1s ease;
+        }
+        .btn-notion:hover {
+            background-color: rgba(55, 53, 47, 0.08);
+        }
+        .btn-notion:active {
+            background-color: rgba(55, 53, 47, 0.16);
+        }
+
+        /* Breathing Animation Keyframes */
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.8; border-color: #60A5FA; } /* Inhale Start/Exhale End */
+            40% { transform: scale(1.5); opacity: 1; border-color: #3B82F6; } /* Hold Full */
+            60% { transform: scale(1.5); opacity: 1; border-color: #3B82F6; } /* Hold Full */
+        }
+
+        .breathing-circle {
+            animation: breathe 16s infinite ease-in-out; /* 4s in, 4s hold, 4s out, 4s hold */
+        }
+        
+        .instruction-text {
+            animation: textGuide 16s infinite;
+        }
+
+        @keyframes textGuide {
+            0% { content: "Inhale"; opacity: 0.5; }
+            20% { content: "Inhale"; opacity: 1; }
+            25% { content: "Hold"; opacity: 0.5; }
+            45% { content: "Hold"; opacity: 1; }
+            50% { content: "Exhale"; opacity: 0.5; }
+            70% { content: "Exhale"; opacity: 1; }
+            75% { content: "Hold"; opacity: 0.5; }
+            95% { content: "Hold"; opacity: 1; }
+            100% { content: "Inhale"; opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col overflow-hidden selection:bg-blue-100">
+
+    <!-- Header / Tabs -->
+    <div class="flex border-b border-gray-200 bg-white">
+        <button onclick="switchTab('focus')" id="tab-focus" class="flex-1 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-blue-500 transition-colors">
+            🧠 Deep Focus
+        </button>
+        <button onclick="switchTab('calm')" id="tab-calm" class="flex-1 py-3 text-sm font-medium text-gray-400 hover:text-gray-900 border-b-2 border-transparent transition-colors">
+            🌬️ Regulate
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 relative">
+        
+        <!-- FOCUS VIEW -->
+        <div id="view-focus" class="absolute inset-0 flex flex-col items-center justify-center p-6 transition-opacity duration-300">
+            
+            <!-- Intention Setting -->
+            <div class="w-full max-w-xs mb-8">
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Current Anchor</label>
+                <input type="text" id="intention-input" placeholder="What is the ONE task?" 
+                    class="w-full bg-transparent text-lg font-medium border-b border-gray-300 focus:border-blue-500 outline-none py-1 text-center placeholder-gray-300"
+                    oninput="saveIntention()">
+            </div>
+
+            <!-- Timer Display -->
+            <div class="text-6xl font-light tracking-tighter mb-8 text-gray-800 font-mono" id="timer-display">25:00</div>
+
+            <!-- Controls -->
+            <div class="flex space-x-4">
+                <button onclick="toggleTimer()" id="btn-start" class="btn-notion px-6 py-2 rounded border border-gray-200 text-sm font-medium hover:shadow-sm bg-white">
+                    Start
+                </button>
+                <button onclick="resetTimer()" class="btn-notion px-4 py-2 rounded border border-gray-200 text-sm text-gray-500 bg-white hover:text-red-500">
+                    Reset
+                </button>
+            </div>
+
+            <!-- Mode Toggle (Pomodoro vs Short Break) -->
+            <div class="mt-8 flex space-x-2 text-xs">
+                <button onclick="setMode(25)" class="px-2 py-1 rounded hover:bg-gray-100 text-gray-500">Pomodoro</button>
+                <button onclick="setMode(5)" class="px-2 py-1 rounded hover:bg-gray-100 text-gray-500">Short Break</button>
+            </div>
+        </div>
+
+        <!-- CALM VIEW (Box Breathing) -->
+        <div id="view-calm" class="absolute inset-0 flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+            
+            <div class="relative flex items-center justify-center w-48 h-48">
+                <!-- The Breathing Circle -->
+                <div id="breath-circle" class="absolute w-24 h-24 rounded-full border-4 border-blue-300 bg-blue-50"></div>
+                
+                <!-- Text Guide -->
+                <div id="breath-text" class="absolute text-sm font-medium text-blue-600 tracking-widest uppercase">Ready?</div>
+            </div>
+
+            <p class="mt-8 text-xs text-gray-400 text-center max-w-xs">
+                Box Breathing (4-4-4-4)<br>
+                Inhale &bull; Hold &bull; Exhale &bull; Hold<br>
+                Use this to reset before switching tasks.
+            </p>
+            
+            <button id="breath-toggle" onclick="toggleBreathing()" class="mt-4 btn-notion px-6 py-2 rounded border border-gray-200 text-sm font-medium bg-white">
+                Start Session
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let timeLeft = 25 * 60;
+        let timerId = null;
+        let isRunning = false;
+        let currentModeTime = 25 * 60;
+        
+        let isBreathing = false;
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // Load saved intention
+            const savedIntention = localStorage.getItem('focusIntention');
+            if (savedIntention) {
+                document.getElementById('intention-input').value = savedIntention;
+            }
+            updateTimerDisplay();
+        };
+
+        // --- TAB SWITCHING ---
+        function switchTab(tab) {
+            const focusView = document.getElementById('view-focus');
+            const calmView = document.getElementById('view-calm');
+            const focusTab = document.getElementById('tab-focus');
+            const calmTab = document.getElementById('tab-calm');
+
+            if (tab === 'focus') {
+                focusView.classList.remove('opacity-0', 'pointer-events-none');
+                calmView.classList.add('opacity-0', 'pointer-events-none');
+                
+                focusTab.classList.add('border-blue-500', 'text-gray-600');
+                focusTab.classList.remove('border-transparent', 'text-gray-400');
+                
+                calmTab.classList.remove('border-blue-500', 'text-gray-600');
+                calmTab.classList.add('border-transparent', 'text-gray-400');
+            } else {
+                calmView.classList.remove('opacity-0', 'pointer-events-none');
+                focusView.classList.add('opacity-0', 'pointer-events-none');
+
+                calmTab.classList.add('border-blue-500', 'text-gray-600');
+                calmTab.classList.remove('border-transparent', 'text-gray-400');
+                
+                focusTab.classList.remove('border-blue-500', 'text-gray-600');
+                focusTab.classList.add('border-transparent', 'text-gray-400');
+            }
+        }
+
+        // --- FOCUS LOGIC ---
+        function saveIntention() {
+            const val = document.getElementById('intention-input').value;
+            localStorage.setItem('focusIntention', val);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update tab title so you can see time if looking at another tab
+            document.title = isRunning ? 
+                `(${minutes}:${seconds.toString().padStart(2, '0')}) Focus Anchor` : 
+                "Focus & Calm Anchor";
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('btn-start');
+            if (isRunning) {
+                clearInterval(timerId);
+                isRunning = false;
+                btn.textContent = "Start";
+            } else {
+                isRunning = true;
+                btn.textContent = "Pause";
+                timerId = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        // Timer finished
+                        clearInterval(timerId);
+                        isRunning = false;
+                        btn.textContent = "Start";
+                        // Simple flash visual indication
+                        document.body.style.backgroundColor = "#DBEAFE";
+                        setTimeout(() => document.body.style.backgroundColor = "#F7F7F5", 500);
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+            document.getElementById('btn-start').textContent = "Start";
+            timeLeft = currentModeTime;
+            updateTimerDisplay();
+        }
+
+        function setMode(minutes) {
+            currentModeTime = minutes * 60;
+            resetTimer();
+        }
+
+        // --- BREATHING LOGIC ---
+        function toggleBreathing() {
+            const circle = document.getElementById('breath-circle');
+            const text = document.getElementById('breath-text');
+            const btn = document.getElementById('breath-toggle');
+
+            if (isBreathing) {
+                // Stop
+                circle.classList.remove('breathing-circle');
+                text.style.animation = 'none';
+                text.textContent = "Ready?";
+                btn.textContent = "Start Session";
+                isBreathing = false;
+            } else {
+                // Start
+                text.textContent = ""; // Clear initial text
+                circle.classList.add('breathing-circle');
+                
+                // Sync text animation manually with CSS timing
+                text.style.animation = 'textGuide 16s infinite';
+                
+                btn.textContent = "Stop Session";
+                isBreathing = true;
+            }
+        }
+
+    </script>
+</body>
+</html>
