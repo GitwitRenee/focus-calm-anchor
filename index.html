@@ -3,261 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focus & Calm Anchor</title>
+    <title>Focus Aesthetic Widget</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+
+        :root {
+            --glass-bg: rgba(30, 20, 10, 0.90);
+            --glass-border: rgba(255, 200, 150, 0.15);
+            --accent-gold: #FFB347;
+            --accent-glow: rgba(255, 179, 71, 0.4);
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F7F7F5; /* Notion Default Background */
-            color: #37352F; /* Notion Default Text */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(20, 10, 0, 0.5)), url('Gemini_Generated_Image_dqc0gmdqc0gmdqc0.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+            font-family: 'Times New Roman', Times, serif;
+            color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
         }
 
-        /* Hide scrollbar for cleaner embed */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
+        body.bg-error {
+            background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
         }
 
-        .btn-notion {
-            transition: background-color 0.1s ease;
-        }
-        .btn-notion:hover {
-            background-color: rgba(55, 53, 47, 0.08);
-        }
-        .btn-notion:active {
-            background-color: rgba(55, 53, 47, 0.16);
-        }
-
-        /* Breathing Animation Keyframes */
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.8; border-color: #60A5FA; } /* Inhale Start/Exhale End */
-            40% { transform: scale(1.5); opacity: 1; border-color: #3B82F6; } /* Hold Full */
-            60% { transform: scale(1.5); opacity: 1; border-color: #3B82F6; } /* Hold Full */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(120%); 
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.6),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
-        .breathing-circle {
-            animation: breathe 16s infinite ease-in-out; /* 4s in, 4s hold, 4s out, 4s hold */
+        .font-times { font-family: 'Times New Roman', Times, serif; }
+        .cinzel-font { font-family: 'Cinzel', serif; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,179,71,0.3); border-radius: 3px; }
+
+        /* Hourglass Animation */
+        .hourglass-container {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            transition: transform 0.5s ease;
         }
-        
-        .instruction-text {
-            animation: textGuide 16s infinite;
+        .hourglass-spin { animation: spin 3s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(180deg); }
         }
 
-        @keyframes textGuide {
-            0% { content: "Inhale"; opacity: 0.5; }
-            20% { content: "Inhale"; opacity: 1; }
-            25% { content: "Hold"; opacity: 0.5; }
-            45% { content: "Hold"; opacity: 1; }
-            50% { content: "Exhale"; opacity: 0.5; }
-            70% { content: "Exhale"; opacity: 1; }
-            75% { content: "Hold"; opacity: 0.5; }
-            95% { content: "Hold"; opacity: 1; }
-            100% { content: "Inhale"; opacity: 0.5; }
+        /* Puzzle Styles */
+        .puzzle-view-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #2a2a2a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .puzzle-image-layer {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 1s ease;
+        }
+        .puzzle-grid-overlay {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            gap: 1px;
+            background: rgba(0,0,0,0.2);
+        }
+        .puzzle-cover-piece {
+            background-color: #3d3d3d;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.15);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+        .puzzle-cover-piece::before, .puzzle-cover-piece::after {
+            content: '';
+            position: absolute;
+            width: 20%;
+            height: 20%;
+            background: inherit;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .puzzle-cover-piece::before { top: -10%; left: 50%; transform: translateX(-50%); }
+        .puzzle-cover-piece::after { left: -10%; top: 50%; transform: translateY(-50%); }
+
+        .puzzle-cover-piece.revealed {
+            opacity: 0;
+            transform: scale(0.8) rotate(15deg);
+            pointer-events: none;
+        }
+
+        /* Navigation Tabs */
+        .nav-tab {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        .nav-tab.active {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Reward Overlay */
+        .reward-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 20;
+            backdrop-filter: blur(2px);
+            text-align: center;
+            padding: 20px;
+        }
+        .reward-overlay.visible { opacity: 1; pointer-events: auto; }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 50;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Checkbox */
+        .custom-checkbox {
+            appearance: none;
+            background-color: rgba(255,255,255,0.1);
+            color: var(--accent-gold);
+            width: 1.2em;
+            height: 1.2em;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 0.15em;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+        }
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--accent-gold);
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked::before { transform: scale(1); }
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
         }
     </style>
 </head>
-<body class="h-screen w-full flex flex-col overflow-hidden selection:bg-blue-100">
+<body onload="initWidget()">
 
-    <!-- Header / Tabs -->
-    <div class="flex border-b border-gray-200 bg-white">
-        <button onclick="switchTab('focus')" id="tab-focus" class="flex-1 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-blue-500 transition-colors">
-            🧠 Deep Focus
-        </button>
-        <button onclick="switchTab('calm')" id="tab-calm" class="flex-1 py-3 text-sm font-medium text-gray-400 hover:text-gray-900 border-b-2 border-transparent transition-colors">
-            🌬️ Regulate
-        </button>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 relative">
+    <div class="glass-panel w-11/12 max-w-md p-6 relative overflow-hidden flex flex-col gap-4 h-[90vh]">
         
-        <!-- FOCUS VIEW -->
-        <div id="view-focus" class="absolute inset-0 flex flex-col items-center justify-center p-6 transition-opacity duration-300">
-            
-            <!-- Intention Setting -->
-            <div class="w-full max-w-xs mb-8">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Current Anchor</label>
-                <input type="text" id="intention-input" placeholder="What is the ONE task?" 
-                    class="w-full bg-transparent text-lg font-medium border-b border-gray-300 focus:border-blue-500 outline-none py-1 text-center placeholder-gray-300"
-                    oninput="saveIntention()">
+        <!-- Header -->
+        <div class="header flex justify-between items-center border-b border-white/10 pb-3 shrink-0">
+            <div class="text-left">
+                <h2 id="digital-clock" class="text-3xl font-bold tracking-wider font-times text-white">00:00</h2>
+                <p class="text-xs text-yellow-500 uppercase tracking-widest opacity-80">Autumn Focus</p>
             </div>
-
-            <!-- Timer Display -->
-            <div class="text-6xl font-light tracking-tighter mb-8 text-gray-800 font-mono" id="timer-display">25:00</div>
-
-            <!-- Controls -->
-            <div class="flex space-x-4">
-                <button onclick="toggleTimer()" id="btn-start" class="btn-notion px-6 py-2 rounded border border-gray-200 text-sm font-medium hover:shadow-sm bg-white">
-                    Start
-                </button>
-                <button onclick="resetTimer()" class="btn-notion px-4 py-2 rounded border border-gray-200 text-sm text-gray-500 bg-white hover:text-red-500">
-                    Reset
-                </button>
-            </div>
-
-            <!-- Mode Toggle (Pomodoro vs Short Break) -->
-            <div class="mt-8 flex space-x-2 text-xs">
-                <button onclick="setMode(25)" class="px-2 py-1 rounded hover:bg-gray-100 text-gray-500">Pomodoro</button>
-                <button onclick="setMode(5)" class="px-2 py-1 rounded hover:bg-gray-100 text-gray-500">Short Break</button>
+            <div class="hourglass-container" id="hourglass-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 w-full h-full">
+                    <path d="M5 22h14"/>
+                    <path d="M5 2h14"/>
+                    <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/>
+                    <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>
+                </svg>
             </div>
         </div>
 
-        <!-- CALM VIEW (Box Breathing) -->
-        <div id="view-calm" class="absolute inset-0 flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+        <!-- Tabs -->
+        <div class="flex justify-center gap-2 border-b border-white/5 pb-1 shrink-0">
+            <button onclick="switchTab('timer')" id="tab-timer" class="nav-tab active">Timer</button>
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="nav-tab">Tasks</button>
+            <button onclick="switchTab('puzzle')" id="tab-puzzle" class="nav-tab">Puzzle</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-1 relative w-full overflow-hidden">
             
-            <div class="relative flex items-center justify-center w-48 h-48">
-                <!-- The Breathing Circle -->
-                <div id="breath-circle" class="absolute w-24 h-24 rounded-full border-4 border-blue-300 bg-blue-50"></div>
+            <!-- View 1: Timer -->
+            <div id="view-timer" class="absolute inset-0 transition-all duration-500 flex flex-col gap-4 z-10">
+                <div class="text-center space-y-1 py-2 mt-4">
+                    <p class="serif-font italic text-lg text-yellow-100/90">"Create and Learn."</p>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Small deeds make great acts.</p>
+                </div>
+
+                <div class="bg-black/40 rounded-lg p-5 text-center space-y-4 border border-white/10 shadow-lg mt-4">
+                    <div class="flex justify-center items-end gap-1">
+                        <span id="timer-display" class="text-6xl font-times font-light text-white drop-shadow-md">25:00</span>
+                    </div>
+                    <input type="text" id="focus-input" placeholder="What is your focus?" 
+                        class="w-full bg-transparent border-b border-white/20 text-center text-sm text-white placeholder-gray-400 py-1 focus:border-yellow-500 transition-colors font-times">
+                    <div class="flex justify-center gap-3 pt-2">
+                        <button onclick="toggleTimer()" id="start-btn" class="px-6 py-1.5 bg-white/10 hover:bg-yellow-600/80 text-xs uppercase tracking-widest rounded transition-all border border-white/10 font-times text-white">Start</button>
+                        <button onclick="resetTimer()" class="px-4 py-1.5 bg-transparent hover:bg-white/10 text-xs uppercase tracking-widest rounded transition-all border border-white/10 text-gray-400 font-times">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 2: Tasks (New Section) -->
+            <div id="view-tasks" class="absolute inset-0 transition-all duration-500 translate-x-full opacity-0 flex flex-col gap-4 z-0 pointer-events-none">
+                <div class="flex justify-between items-center mt-2">
+                    <h3 class="text-xs uppercase tracking-widest text-gray-400">Task List</h3>
+                    <button onclick="clearAll()" class="text-[10px] text-red-400/60 hover:text-red-400 flex items-center gap-1">
+                        <i class="fas fa-trash-alt"></i> Reset
+                    </button>
+                </div>
                 
-                <!-- Text Guide -->
-                <div id="breath-text" class="absolute text-sm font-medium text-blue-600 tracking-widest uppercase">Ready?</div>
+                <div class="mt-1 flex gap-2">
+                    <input type="text" id="new-task-input" placeholder="Add new task..." 
+                        class="flex-1 bg-white/5 rounded px-3 py-2 text-sm text-white placeholder-gray-500 border border-transparent focus:border-yellow-500/50 font-times">
+                    <button onclick="addTask()" class="bg-yellow-600/80 hover:bg-yellow-500 text-white px-3 rounded transition-colors">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <div id="task-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar pb-2">
+                    <!-- Tasks go here -->
+                </div>
+                
+                <p class="text-[10px] text-center text-gray-500 italic">Tasks added here create pieces in the Puzzle tab.</p>
             </div>
 
-            <p class="mt-8 text-xs text-gray-400 text-center max-w-xs">
-                Box Breathing (4-4-4-4)<br>
-                Inhale &bull; Hold &bull; Exhale &bull; Hold<br>
-                Use this to reset before switching tasks.
-            </p>
-            
-            <button id="breath-toggle" onclick="toggleBreathing()" class="mt-4 btn-notion px-6 py-2 rounded border border-gray-200 text-sm font-medium bg-white">
-                Start Session
-            </button>
-        </div>
+            <!-- View 3: Puzzle -->
+            <div id="view-puzzle" class="absolute inset-0 transition-all duration-500 translate-x-full opacity-0 flex flex-col items-center justify-start pt-4 pointer-events-none z-0">
+                <div class="puzzle-view-container shadow-2xl" id="puzzle-container-wrapper">
+                    <div class="puzzle-image-layer" id="puzzle-image" style="background-image: url('https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1000&auto=format&fit=crop');"></div>
+                    <div class="puzzle-grid-overlay" id="puzzle-grid"></div>
+                    <div id="reward-overlay" class="reward-overlay">
+                        <i class="fas fa-trophy text-yellow-400 text-4xl mb-3 animate-bounce"></i>
+                        <h3 class="text-2xl font-bold font-times text-white mb-2">Complete!</h3>
+                        <p id="reward-quote" class="text-sm italic font-times text-gray-200 max-w-[80%]">"Success is the sum of small efforts."</p>
+                    </div>
+                </div>
+                <div class="text-center mt-auto pb-4">
+                    <p id="progress-text" class="text-xs text-gray-400 italic font-times">0% of puzzle revealed</p>
+                    <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">Check tasks in "Tasks" tab</p>
+                </div>
+            </div>
 
+        </div>
     </div>
 
     <script>
-        // --- STATE MANAGEMENT ---
-        let timeLeft = 25 * 60;
-        let timerId = null;
+        // --- Configuration ---
+        const MOTIVATIONAL_QUOTES = [
+          "Great acts are made up of small deeds.",
+          "Focus on being productive instead of busy.",
+          "The future depends on what you do today.",
+          "Progress is progress, no matter how small.",
+          "Your potential is endless."
+        ];
+
+        let timerInterval;
         let isRunning = false;
-        let currentModeTime = 25 * 60;
+        let timeLeft = 25 * 60;
         
-        let isBreathing = false;
+        const defaultTasks = [
+            { id: 1, text: "Deep Work Session 1", completed: false },
+            { id: 2, text: "Review Goals", completed: false },
+            { id: 3, text: "Exercise / Movement", completed: false },
+            { id: 4, text: "Clear Inbox", completed: false }
+        ];
+        
+        let tasks = JSON.parse(localStorage.getItem('myWidgetTasks')) || defaultTasks;
 
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            // Load saved intention
-            const savedIntention = localStorage.getItem('focusIntention');
-            if (savedIntention) {
-                document.getElementById('intention-input').value = savedIntention;
-            }
-            updateTimerDisplay();
-        };
+        // --- Initialization ---
+        function initWidget() {
+            switchTab('timer');
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderTasks();
+            
+            const savedFocus = localStorage.getItem('focusText');
+            if(savedFocus) document.getElementById('focus-input').value = savedFocus;
 
-        // --- TAB SWITCHING ---
-        function switchTab(tab) {
-            const focusView = document.getElementById('view-focus');
-            const calmView = document.getElementById('view-calm');
-            const focusTab = document.getElementById('tab-focus');
-            const calmTab = document.getElementById('tab-calm');
-
-            if (tab === 'focus') {
-                focusView.classList.remove('opacity-0', 'pointer-events-none');
-                calmView.classList.add('opacity-0', 'pointer-events-none');
-                
-                focusTab.classList.add('border-blue-500', 'text-gray-600');
-                focusTab.classList.remove('border-transparent', 'text-gray-400');
-                
-                calmTab.classList.remove('border-blue-500', 'text-gray-600');
-                calmTab.classList.add('border-transparent', 'text-gray-400');
-            } else {
-                calmView.classList.remove('opacity-0', 'pointer-events-none');
-                focusView.classList.add('opacity-0', 'pointer-events-none');
-
-                calmTab.classList.add('border-blue-500', 'text-gray-600');
-                calmTab.classList.remove('border-transparent', 'text-gray-400');
-                
-                focusTab.classList.remove('border-blue-500', 'text-gray-600');
-                focusTab.classList.add('border-transparent', 'text-gray-400');
-            }
+            const img = new Image();
+            img.src = 'Gemini_Generated_Image_dqc0gmdqc0gmdqc0.jpg';
+            img.onerror = function() { document.body.classList.add('bg-error'); };
         }
 
-        // --- FOCUS LOGIC ---
-        function saveIntention() {
-            const val = document.getElementById('intention-input').value;
-            localStorage.setItem('focusIntention', val);
+        // --- Tab Switching Logic ---
+        function switchTab(tabName) {
+            const views = {
+                timer: document.getElementById('view-timer'),
+                tasks: document.getElementById('view-tasks'),
+                puzzle: document.getElementById('view-puzzle')
+            };
+            
+            const tabs = {
+                timer: document.getElementById('tab-timer'),
+                tasks: document.getElementById('tab-tasks'),
+                puzzle: document.getElementById('tab-puzzle')
+            };
+
+            // Reset all
+            Object.values(views).forEach(view => {
+                view.style.opacity = '0';
+                view.style.pointerEvents = 'none';
+                view.style.zIndex = '0';
+                // Move off screen slightly for transition effect
+                view.style.transform = 'translateX(20px)'; 
+            });
+            
+            Object.values(tabs).forEach(tab => tab.classList.remove('active'));
+
+            // Activate selected
+            const activeView = views[tabName];
+            activeView.style.opacity = '1';
+            activeView.style.pointerEvents = 'auto';
+            activeView.style.zIndex = '10';
+            activeView.style.transform = 'translateX(0)';
+            
+            tabs[tabName].classList.add('active');
+        }
+
+        // --- Clock & Timer ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('digital-clock').textContent = 
+                `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         }
 
         function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
             document.getElementById('timer-display').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            // Update tab title so you can see time if looking at another tab
-            document.title = isRunning ? 
-                `(${minutes}:${seconds.toString().padStart(2, '0')}) Focus Anchor` : 
-                "Focus & Calm Anchor";
+                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            document.title = isRunning ? `(${String(m).padStart(2, '0')}) Focus` : "Focus Widget";
         }
 
         function toggleTimer() {
-            const btn = document.getElementById('btn-start');
+            const btn = document.getElementById('start-btn');
+            const hourglass = document.getElementById('hourglass-icon');
+            
             if (isRunning) {
-                clearInterval(timerId);
-                isRunning = false;
-                btn.textContent = "Start";
+                clearInterval(timerInterval);
+                btn.textContent = "Resume";
+                hourglass.classList.remove('hourglass-spin');
             } else {
-                isRunning = true;
-                btn.textContent = "Pause";
-                timerId = setInterval(() => {
+                timerInterval = setInterval(() => {
                     if (timeLeft > 0) {
                         timeLeft--;
                         updateTimerDisplay();
                     } else {
-                        // Timer finished
-                        clearInterval(timerId);
+                        clearInterval(timerInterval);
+                        alert("Session Complete!");
+                        hourglass.classList.remove('hourglass-spin');
                         isRunning = false;
                         btn.textContent = "Start";
-                        // Simple flash visual indication
-                        document.body.style.backgroundColor = "#DBEAFE";
-                        setTimeout(() => document.body.style.backgroundColor = "#F7F7F5", 500);
                     }
                 }, 1000);
+                btn.textContent = "Pause";
+                hourglass.classList.add('hourglass-spin');
+                localStorage.setItem('focusText', document.getElementById('focus-input').value);
             }
+            isRunning = !isRunning;
         }
 
         function resetTimer() {
-            clearInterval(timerId);
+            clearInterval(timerInterval);
             isRunning = false;
-            document.getElementById('btn-start').textContent = "Start";
-            timeLeft = currentModeTime;
+            timeLeft = 25 * 60;
             updateTimerDisplay();
+            document.getElementById('start-btn').textContent = "Start";
+            document.getElementById('hourglass-icon').classList.remove('hourglass-spin');
         }
 
-        function setMode(minutes) {
-            currentModeTime = minutes * 60;
-            resetTimer();
-        }
+        // --- Tasks & Puzzle ---
+        function renderTasks() {
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
 
-        // --- BREATHING LOGIC ---
-        function toggleBreathing() {
-            const circle = document.getElementById('breath-circle');
-            const text = document.getElementById('breath-text');
-            const btn = document.getElementById('breath-toggle');
+            let completedCount = 0;
+            tasks.forEach((task, index) => {
+                if(task.completed) completedCount++;
+                
+                const div = document.createElement('div');
+                div.className = `task-item flex items-center gap-3 bg-white/5 p-3 rounded border border-white/5 ${task.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" class="custom-checkbox" 
+                        onchange="toggleTask(${index})" ${task.completed ? 'checked' : ''}>
+                    <span class="flex-1 text-sm truncate font-times">${task.text}</span>
+                    <button onclick="deleteTask(${index})" class="text-white/20 hover:text-red-400 transition-colors">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                `;
+                taskList.appendChild(div);
+            });
 
-            if (isBreathing) {
-                // Stop
-                circle.classList.remove('breathing-circle');
-                text.style.animation = 'none';
-                text.textContent = "Ready?";
-                btn.textContent = "Start Session";
-                isBreathing = false;
+            const percentage = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+            document.getElementById('progress-text').textContent = `${percentage}% of puzzle revealed`;
+            
+            renderPuzzleGrid();
+
+            const rewardOverlay = document.getElementById('reward-overlay');
+            if (tasks.length > 0 && completedCount === tasks.length) {
+                if (!rewardOverlay.classList.contains('visible')) showReward();
             } else {
-                // Start
-                text.textContent = ""; // Clear initial text
-                circle.classList.add('breathing-circle');
-                
-                // Sync text animation manually with CSS timing
-                text.style.animation = 'textGuide 16s infinite';
-                
-                btn.textContent = "Stop Session";
-                isBreathing = true;
+                rewardOverlay.classList.remove('visible');
+            }
+
+            localStorage.setItem('myWidgetTasks', JSON.stringify(tasks));
+        }
+
+        function renderPuzzleGrid() {
+            const grid = document.getElementById('puzzle-grid');
+            const count = tasks.length;
+            const cols = count > 0 ? Math.ceil(Math.sqrt(count)) : 1;
+            const rows = count > 0 ? Math.ceil(count / cols) : 1;
+
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            grid.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const piece = document.createElement('div');
+                piece.className = `puzzle-cover-piece ${task.completed ? 'revealed' : ''}`;
+                piece.innerText = index + 1;
+                grid.appendChild(piece);
+            });
+            
+            const totalSlots = cols * rows;
+            for(let i = tasks.length; i < totalSlots; i++) {
+                const empty = document.createElement('div');
+                empty.style.background = 'transparent'; 
+                grid.appendChild(empty);
             }
         }
 
+        function addTask() {
+            const input = document.getElementById('new-task-input');
+            const text = input.value.trim();
+            if (text) {
+                tasks.push({ id: Date.now(), text: text, completed: false });
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function clearAll() {
+            if(confirm("Reset all tasks and start a new puzzle?")) {
+                tasks = [{ id: 1, text: "Start new task...", completed: false }];
+                renderTasks();
+            }
+        }
+
+        function showReward() {
+            const rewardOverlay = document.getElementById('reward-overlay');
+            const quoteEl = document.getElementById('reward-quote');
+            const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+            quoteEl.textContent = `"${randomQuote}"`;
+            rewardOverlay.classList.add('visible');
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const colors = ['#d4af37', '#ffffff', '#ffb347', '#ffcc00'];
+            const container = document.getElementById('puzzle-container-wrapper');
+            for(let i = 0; i < 40; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.top = '-10px';
+                conf.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                conf.style.animationDelay = (Math.random() * 1) + 's';
+                container.appendChild(conf);
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        document.getElementById('new-task-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addTask();
+        });
     </script>
 </body>
 </html>
