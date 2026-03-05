@@ -18,4 +18,4 @@ I wanted something clean and calming — no clutter, no noise, just focus.
 - JavaScript
 
 ## To run it
-Just open `index.html` in your browser — no install needed.
+Just click or type the following URL: https://gitwitrenee.github.io/focus-calm-anchor/
